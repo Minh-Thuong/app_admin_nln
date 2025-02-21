@@ -1,5 +1,6 @@
 import 'package:admin/bloc/auth/bloc/auth_bloc.dart';
 import 'package:admin/datasource/auth_datasource.dart';
+import 'package:admin/dio/dio_client.dart';
 import 'package:admin/repository/auth_repository.dart';
 import 'package:admin/screen/home_screen.dart';
 import 'package:admin/screen/login/login_screen.dart';
@@ -12,9 +13,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 void main(List<String> args) {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Tạo instance của AuthenticationRemote, với Dio có baseUrl phù hợp
+  // Sử dụng DioClient singleton để lấy Dio instance
+  final dio = DioClient.instance;
   final authDatasource = AuthenticationRemote(
-    dio: Dio(BaseOptions(baseUrl: 'http://10.2.0.162:8080')),
+    dio: dio,
   );
   // Tạo Repository và truyền datasource vào
   final authRepository = AuthenticationRepository(authDatasource);
@@ -36,7 +38,7 @@ class StoreManagementApp extends StatelessWidget {
     return BlocProvider(
       create: (context) => AuthBloc(authRepository),
       child: MaterialApp(
-        home: HomeScreen(),
+        home: LoginScreen(),
         debugShowCheckedModeBanner: false,
       ),
     );

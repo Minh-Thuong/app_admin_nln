@@ -1,3 +1,7 @@
+import 'package:admin/bloc/category/bloc/category_bloc.dart';
+import 'package:admin/datasource/category_datasource.dart';
+import 'package:admin/dio/dio_client.dart';
+import 'package:admin/repository/category_repository.dart';
 import 'package:admin/screen/category/category_screen.dart';
 import 'package:admin/screen/employee/employee_screen.dart';
 import 'package:admin/screen/login/login_screen.dart';
@@ -8,8 +12,10 @@ import 'package:admin/screen/supplier/supplier_screen.dart';
 import 'package:admin/screen/user/user_screen.dart';
 import 'package:admin/util/auth_action.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeScreen extends StatelessWidget {
+  
   const HomeScreen({super.key});
 
   @override
@@ -26,7 +32,11 @@ class HomeScreen extends StatelessWidget {
         "icon": Icons.category,
         "label": "Quản lý danh mục",
         "color": const Color.fromARGB(255, 255, 191, 0),
-        "page": const CategoryScreen()
+        // "page":  BlocProvider(
+        //   create: (context) => CategoryBloc(CategoriesRepository(CategoryRemote(dio: DioClient.instance))),
+        //   child: const CategoryScreen(),
+        // )
+        "page": const CategoryScreen() // Bỏ BlocProvider ở đây
       },
       {
         "icon": Icons.shopping_cart,

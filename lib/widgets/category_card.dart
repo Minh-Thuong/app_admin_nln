@@ -27,13 +27,13 @@ class CategoryCard extends StatelessWidget {
                 color: Colors.green.shade100,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(
-                category.icon,
-                color: Colors.white,
-              ),
+              // child: Icon(
+              //   // category.icon,
+              //   // color: Colors.white,
+              // ),
             ),
             const SizedBox(height: 8),
-            Text(category.name),
+            // Text(category.name),
             // hiển thị check mark nếu đã chọn
           ],
         ),

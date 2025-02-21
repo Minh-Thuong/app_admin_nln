@@ -232,21 +232,21 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   OutlinedButton(
                     onPressed: () async {
                       // Mở màn hình chọn danh mục, chờ kết quả
-                      final List<Category>? result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CategorySelectionScreen(
-                            initiallySelected: _selectedCategories,
-                          ),
-                        ),
-                      );
+                      // final List<Category>? result = await Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => CategorySelectionScreen(
+                      //       initiallySelected: _selectedCategories,
+                      //     ),
+                      //   ),
+                      // );
 
-                      if (result != null) {
-                        // Kiểm tra nếu có danh mục được chọn
-                        setState(() {
-                          _selectedCategories = result;
-                        });
-                      }
+                      // if (result != null) {
+                      //   // Kiểm tra nếu có danh mục được chọn
+                      //   setState(() {
+                      //     _selectedCategories = result;
+                      //   });
+                      // }
                     },
                     child: const Text("Chọn danh mục"),
                   ),
@@ -254,25 +254,25 @@ class _AddProductScreenState extends State<AddProductScreen> {
               ),
               const SizedBox(height: 8),
               // hiển thị chip danh mục đã chọn
-              Wrap(
-                spacing: 8,
-                children: _selectedCategories
-                    .map((category) => Chip(
-                          label: Text(category.name),
-                          avatar: Icon(
-                            category.icon,
-                            size: 16,
-                          ),
-                          deleteIcon: const Icon(Icons.close, size: 16),
-                          onDeleted: () {
-                            setState(() {
-                              _selectedCategories
-                                  .remove(category); // Xóa danh mục khi bấm "X"
-                            });
-                          },
-                        ))
-                    .toList(),
-              ),
+              // Wrap(
+              //   spacing: 8,
+              //   children: _selectedCategories
+              //       .map((category) => Chip(
+              //             label: Text(category.result?.name ?? 'Unknown'),
+              //             avatar: Icon(
+              //               (category.result?.profileImage ?? Icons.category) as IconData?,
+              //               size: 16,
+              //             ),
+              //             deleteIcon: const Icon(Icons.close, size: 16),
+              //             onDeleted: () {
+              //               setState(() {
+              //                 _selectedCategories
+              //                     .remove(category); // Xóa danh mục khi bấm "X"
+              //               });
+              //             },
+              //           ))
+              //       .toList(),
+              // ),
               const SizedBox(height: 8),
               // nhập mô tả sản phẩm
               _buildTextField(
