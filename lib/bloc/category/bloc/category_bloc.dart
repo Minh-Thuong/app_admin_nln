@@ -14,6 +14,10 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   CategoryBloc(this._categoriesRepository) : super(CategoryInitial()) {
     on<CreateCategoryRequested>(_onCreateProductRequested);
     on<LoadCategories>(_onLoadCategories);
+    on<UpdateCategoryRequested>(
+        _onUpdateCategoryRequested); // Xử lý sự kiện cập nhật
+
+    on<DeleteCategoryRequested>(_onDeleteCategoryRequested);
   }
 
   Future<void> _onCreateProductRequested(
@@ -30,26 +34,6 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       emit(CategoryError(e.toString()));
     }
   }
-  // Future<void> _onCreateProductRequested(
-  //     CreateCategoryRequested event, Emitter<CategoryState> emit) async {
-  //   try {
-  //     final newCategory =
-  //         await _categoriesRepository.createCategory(event.name, event.image);
-
-  //     if (state is CategoryLoaded) {
-  //       final updatedCategories =
-  //           List<Category>.from((state as CategoryLoaded).categories)
-  //             ..add(newCategory); // Thêm danh mục mới vào danh sách cũ
-
-  //       emit(CategoryLoaded(updatedCategories));
-  //     } else {
-  //       emit(
-  //           CategoryLoaded([newCategory])); // Nếu trước đó chưa có danh mục nào
-  //     }
-  //   } catch (e) {
-  //     emit(CategoryError(e.toString()));
-  //   }
-  // }
 
   Future<void> _onLoadCategories(
       LoadCategories event, Emitter<CategoryState> emit) async {
@@ -57,6 +41,43 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     try {
       final result = await _categoriesRepository.getCategories();
       emit(CategoryLoaded(result));
+    } catch (e) {
+      emit(CategoryError(e.toString()));
+    }
+  }
+
+  // Xử lý sự kiện cập nhật danh mục
+  Future<void> _onUpdateCategoryRequested(
+      UpdateCategoryRequested event, Emitter<CategoryState> emit) async {
+    emit(CategoryLoading());
+    try {
+      final result = await _categoriesRepository.updateCategory(
+          event.id, event.name, event.image);
+      _categories.removeWhere(
+          (category) => category.id == event.id); // Xóa danh mục cũ
+      _categories.add(result); // Thêm danh mục đã được cập nhật
+      emit(CategoryUpdated(result)); // Cập nhật thành công
+      emit(CategoryLoaded(_categories)); // Cập nhật danh sách danh mục
+    } catch (e) {
+      emit(CategoryError(e.toString()));
+    }
+  }
+
+  Future<void> _onDeleteCategoryRequested(
+      DeleteCategoryRequested event, Emitter<CategoryState> emit) async {
+    emit(CategoryLoading());
+    try {
+      // Gọi phương thức xóa danh mục trong Repository
+      await _categoriesRepository.deleteCategory(event.id);
+
+      // Cập nhật danh sách danh mục sau khi xóa thành công
+      _categories.removeWhere((category) => category.id == event.id);
+
+      // Sau khi xóa, tải lại danh sách danh mục mới nhất từ repository (gọi lại API)
+      final updatedCategories = await _categoriesRepository.getCategories();
+      emit(
+          CategoryLoaded(updatedCategories)); // Cập nhật lại danh sách danh mục
+      emit(CategoryDeleted()); // Thông báo xóa thành công
     } catch (e) {
       emit(CategoryError(e.toString()));
     }

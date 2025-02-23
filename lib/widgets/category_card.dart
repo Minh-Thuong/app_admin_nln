@@ -10,9 +10,9 @@ class CategoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return CategoryDetailScreen();
-        }));
+        // Navigator.push(context, MaterialPageRoute(builder: (context) {
+        //   // return CategoryDetailScreen();
+        // }));
       },
       child: SizedBox(
         width: double

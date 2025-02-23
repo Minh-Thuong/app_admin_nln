@@ -89,6 +89,12 @@ class _CreateCategoryScreen extends State<CreateCategoryScreen> {
       name: _categoryNameController.text,
       image: _selectedImage!,
     ));
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
   }
 
   // Hàm xóa ảnh khi người dùng nhấn vào nút "X"
@@ -147,6 +153,7 @@ class _CreateCategoryScreen extends State<CreateCategoryScreen> {
                   BlocConsumer<CategoryBloc, CategoryState>(
                     listener: (context, state) {
                       if (state is CategoryError) {
+                        Navigator.of(context).pop();
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("Danh mục đã tồn tại")),
                         );
@@ -161,51 +168,28 @@ class _CreateCategoryScreen extends State<CreateCategoryScreen> {
                         setState(() {
                           _selectedImage = null;
                         });
-
+                        Navigator.of(context).pop(); // Close loading dialog
                         // Trở lại màn hình CategoryScreen và phát sự kiện LoadCategories
                         Navigator.pop(context,
                             true); // Quay lại màn hình trước đó (CategoryScreen)
-                        // BlocProvider.of<CategoryBloc>(context).add(
+                        // context.read<CategoryBloc>().add(
                         //     LoadCategories()); // Yêu cầu tải lại danh mục mới
                       }
                     },
                     builder: (context, state) {
                       return Expanded(
                         flex: 1,
-                        child: state is CategoryLoading
-                            ? Stack(
-                                children: [
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color.fromARGB(
-                                          255, 61, 194, 103),
-                                    ),
-                                    onPressed:
-                                        null, // Disable the button during loading
-                                    child: Text(
-                                      "Lưu và thêm mới",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ),
-                                  Positioned.fill(
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: CircularProgressIndicator(),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      const Color.fromARGB(255, 61, 194, 103),
-                                ),
-                                onPressed: createCategory,
-                                child: Text(
-                                  "Lưu và thêm mới",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromARGB(255, 61, 194, 103),
+                          ),
+                          onPressed: createCategory,
+                          child: Text(
+                            "Lưu và thêm mới",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
                       );
                     },
                   )
@@ -227,7 +211,7 @@ class _CreateCategoryScreen extends State<CreateCategoryScreen> {
           child: Image.file(
             File(_selectedImage!.path),
             width: double.infinity,
-            height: 150.h,
+            height: 200.h,
             fit: BoxFit.cover,
           ),
         ),
@@ -280,8 +264,7 @@ class _CreateCategoryScreen extends State<CreateCategoryScreen> {
           maxLines: null,
           controller: controller,
           decoration: InputDecoration(
-            suffixIcon: suffixIcon,
-          ),
+              suffixIcon: suffixIcon, border: OutlineInputBorder()),
         ),
       ],
     );
