@@ -15,18 +15,12 @@ class AddProductScreen extends StatefulWidget {
 
 class _AddProductScreenState extends State<AddProductScreen> {
   // Các TextEditingController cho thông tin sản phẩm
-  final TextEditingController _productNameController =
-      TextEditingController(text: "Aaffff");
-  final TextEditingController _priceController =
-      TextEditingController(text: "118");
-  final TextEditingController _costPriceController =
-      TextEditingController(text: "55");
-  final TextEditingController _salePriceController =
-      TextEditingController(text: "0.000");
-  final TextEditingController _productCodeController =
-      TextEditingController(text: "SP0001");
-  final TextEditingController _quantityController =
-      TextEditingController(text: "0");
+  final TextEditingController _productNameController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _costPriceController = TextEditingController();
+  final TextEditingController _salePriceController = TextEditingController();
+  final TextEditingController _productCodeController = TextEditingController();
+  final TextEditingController _quantityController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _barcodeController = TextEditingController();
 
@@ -54,262 +48,348 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
   }
 
-// Xóa ảnh khỏi danh sách
+  // Xóa ảnh khỏi danh sách
   void removeImage(int index) {
     setState(() {
       imageFileList.removeAt(index);
     });
   }
 
-  // Danh sách danh mục đã chọn
-  List<Category> _selectedCategories = [];
+  // Chỉ chọn một danh mục
+  Category? _selectedCategory;
+
+  // Mở màn hình chọn danh mục
+  void _openCategorySelection() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CategorySelectionScreen(
+          initiallySelected: _selectedCategory != null 
+              ? [_selectedCategory!] 
+              : [],
+        ),
+      ),
+    );
+    
+    // Kiểm tra xem có chọn danh mục mới không
+    if (result != null) {
+      setState(() {
+        _selectedCategory = result;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
-        title: Center(child: const Text("Thêm sản phẩm")),
+        title: const Text("Thêm sản phẩm"),
+        centerTitle: true,
         actions: [
           IconButton(
-            iconSize: 40,
+            iconSize: 24,
             icon: const Icon(Icons.camera_enhance),
-            onPressed: () {
-              selectImages();
-            },
+            onPressed: selectImages,
           ),
         ],
       ),
       body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Ảnh sản phẩm
+            Container(
+              height: imageFileList.isEmpty ? 100 : 200,
+              width: double.infinity,
+              decoration: BoxDecoration(
                 color: const Color.fromARGB(255, 213, 226, 214),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: imageFileList.isEmpty
-                          ? const Center(
-                              child: Text(
-                                "Chưa có ảnh nào",
-                                style:
-                                    TextStyle(color: Colors.grey, fontSize: 16),
-                              ),
-                            )
-                          : GridView.builder(
-                              shrinkWrap: true,
-                              gridDelegate:
-                                  SliverGridDelegateWithMaxCrossAxisExtent(
-                                maxCrossAxisExtent: 120.w,
-                              ),
-                              itemCount: imageFileList.length,
-                              itemBuilder: (context, index) {
-                                return Stack(
-                                  children: [
-                                    // Hiển thị ảnh với bo tròn góc
-                                    Positioned.fill(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(8.w),
-                                          child: Image.file(
-                                            File(imageFileList[index].path),
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    // Nút xóa được căn giữa trong container
-                                    Positioned(
-                                      top: 0.w,
-                                      right: 0.w,
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          removeImage(index);
-                                        },
-                                        child: Container(
-                                          width: 30.w,
-                                          height: 30.w,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: const Color.fromARGB(
-                                                255, 195, 195, 192),
-                                          ),
-                                          child: Center(
-                                            // Đảm bảo icon nằm chính giữa container
-                                            child: Icon(
-                                              Icons.close,
-                                              color: Colors.black,
-                                              size: 18
-                                                  .w, // Giảm kích thước icon để phù hợp hơn
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }),
-                    )
-                  ],
-                ),
+                borderRadius: BorderRadius.circular(8),
               ),
-              SizedBox(
-                height: 16.h,
-              ),
-              // _buildLabel("Tên sản phẩm"),
-              _buildTextField(
-                  label: "Tên sản phẩm", controller: _productNameController),
-              SizedBox(
-                height: 8.h,
-              ),
-              // Hàng Giá bán - Giá vốn
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildPriceField("Giá bán", _priceController),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _buildPriceField("Giá vốn", _costPriceController),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildPriceField(
-                        "Giá khuyến mãi", _salePriceController),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _buildTextField(
-                      label: "Số lượng",
-                      controller: _quantityController,
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 8),
-              // Mã sản phẩm - Mã vạch
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildTextField(
-                      label: "Mã sản phẩm",
-                      controller: _productCodeController,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _buildTextField(
-                      label: "Mã vạch",
-                      controller: _barcodeController,
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.qr_code_scanner),
-                        onPressed: () {
-                          // Quét mã vạch
-                        },
+              child: imageFileList.isEmpty
+                  ? const Center(
+                      child: Text(
+                        "Chưa có ảnh nào",
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
                       ),
+                    )
+                  : GridView.builder(
+                      shrinkWrap: true,
+                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 120.w,
+                      ),
+                      itemCount: imageFileList.length,
+                      itemBuilder: (context, index) {
+                        return Stack(
+                          children: [
+                            // Hiển thị ảnh với bo tròn góc
+                            Positioned.fill(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.w),
+                                  child: Image.file(
+                                    File(imageFileList[index].path),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            // Nút xóa được căn giữa trong container
+                            Positioned(
+                              top: 0.w,
+                              right: 0.w,
+                              child: GestureDetector(
+                                onTap: () {
+                                  removeImage(index);
+                                },
+                                child: Container(
+                                  width: 24.w,
+                                  height: 24.w,
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Color.fromARGB(255, 195, 195, 192),
+                                  ),
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.close,
+                                      color: Colors.black,
+                                      size: 16,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+            ),
+
+            SizedBox(height: 16.h),
+
+            // Tên sản phẩm
+            _buildTextField(
+              label: "Tên sản phẩm", 
+              controller: _productNameController
+            ),
+            
+            SizedBox(height: 8.h),
+
+            // Hàng Giá bán - Giá vốn
+            Row(
+              children: [
+                Expanded(
+                  child: _buildPriceField("Giá bán", _priceController),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildPriceField("Giá vốn", _costPriceController),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 8),
+            
+            Row(
+              children: [
+                Expanded(
+                  child: _buildPriceField("Giá khuyến mãi", _salePriceController),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildTextField(
+                    label: "Số lượng",
+                    controller: _quantityController,
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 8),
+            
+            // Mã sản phẩm - Mã vạch
+            Row(
+              children: [
+                Expanded(
+                  child: _buildTextField(
+                    label: "Mã sản phẩm",
+                    controller: _productCodeController,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildTextField(
+                    label: "Mã vạch",
+                    controller: _barcodeController,
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.qr_code_scanner),
+                      onPressed: () {
+                        // Quét mã vạch
+                      },
                     ),
                   ),
-                ],
-              ),
-              SizedBox(
-                height: 8.h,
-              ),
-              // Danh mục (Chip) + Nút bấm
-              Row(
-                children: [
-                  Text("Danh mục"),
-                  SizedBox(width: 8),
-                  // Nút bấm Mở màn hình chọn danh mục
-                  OutlinedButton(
-                    onPressed: () async {
-                      // Mở màn hình chọn danh mục, chờ kết quả
-                      // final List<Category>? result = await Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => CategorySelectionScreen(
-                      //       initiallySelected: _selectedCategories,
-                      //     ),
-                      //   ),
-                      // );
+                ),
+              ],
+            ),
 
-                      // if (result != null) {
-                      //   // Kiểm tra nếu có danh mục được chọn
-                      //   setState(() {
-                      //     _selectedCategories = result;
-                      //   });
-                      // }
-                    },
-                    child: const Text("Chọn danh mục"),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              // hiển thị chip danh mục đã chọn
-              // Wrap(
-              //   spacing: 8,
-              //   children: _selectedCategories
-              //       .map((category) => Chip(
-              //             label: Text(category.result?.name ?? 'Unknown'),
-              //             avatar: Icon(
-              //               (category.result?.profileImage ?? Icons.category) as IconData?,
-              //               size: 16,
-              //             ),
-              //             deleteIcon: const Icon(Icons.close, size: 16),
-              //             onDeleted: () {
-              //               setState(() {
-              //                 _selectedCategories
-              //                     .remove(category); // Xóa danh mục khi bấm "X"
-              //               });
-              //             },
-              //           ))
-              //       .toList(),
-              // ),
-              const SizedBox(height: 8),
-              // nhập mô tả sản phẩm
-              _buildTextField(
-                label: "Mô tả",
-                controller: _descriptionController,
-              ),
-              const SizedBox(height: 8),
-              Row(children: [
+            SizedBox(height: 16.h),
+
+            // Phần chọn danh mục
+            _buildCategorySelection(),
+
+            const SizedBox(height: 16),
+
+            // Mô tả sản phẩm
+            _buildTextField(
+              label: "Mô tả",
+              controller: _descriptionController,
+              maxLines: 3,
+            ),
+            
+            const SizedBox(height: 16),
+
+            // Các nút lưu và hủy
+            Row(
+              children: [
                 Expanded(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            const Color.fromARGB(255, 255, 255, 255),
-                        side: const BorderSide(color: Colors.red)),
+                      backgroundColor: Colors.white,
+                      side: const BorderSide(color: Colors.red),
+                    ),
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: Text("Hủy",
-                        style: TextStyle(
-                            color: const Color.fromARGB(255, 255, 0, 0))),
+                    child: const Text(
+                      "Hủy",
+                      style: TextStyle(color: Colors.red),
+                    ),
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            const Color.fromARGB(255, 61, 194, 103)),
-                    onPressed: () {},
-                    child: Text("Lưu và thêm mới",
-                        style: TextStyle(color: Colors.white)),
+                      backgroundColor: const Color.fromARGB(255, 61, 194, 103),
+                    ),
+                    onPressed: _saveProduct,
+                    child: const Text(
+                      "Lưu và thêm mới",
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
-                )
-              ])
-            ],
-          )),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
+  }
+
+  // Widget hiển thị phần chọn danh mục
+  Widget _buildCategorySelection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildLabel("Danh mục"),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            // Hiển thị danh mục đã chọn hoặc thông báo chưa chọn
+            Expanded(
+              child: _selectedCategory == null
+                  ? const Text(
+                      "Chưa chọn danh mục",
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    )
+                  : Chip(
+                      label: Text(_selectedCategory?.name ?? 'Unknown'),
+                      avatar: const Icon(
+                        Icons.category_sharp,
+                        size: 16,
+                        color: Colors.lightBlueAccent,
+                      ),
+                      deleteIcon: const Icon(Icons.close, size: 16),
+                      onDeleted: () {
+                        setState(() {
+                          _selectedCategory = null;
+                        });
+                      },
+                    ),
+            ),
+            const SizedBox(width: 8),
+            // Nút chọn danh mục
+            OutlinedButton.icon(
+              onPressed: _openCategorySelection,
+              icon: const Icon(Icons.category),
+              label: Text(_selectedCategory == null ? "Chọn danh mục" : "Đổi danh mục"),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.green,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // Lưu sản phẩm
+  void _saveProduct() {
+    // Kiểm tra dữ liệu
+    if (_productNameController.text.isEmpty) {
+      _showError("Vui lòng nhập tên sản phẩm");
+      return;
+    }
+
+    if (_selectedCategory == null) {
+      _showError("Vui lòng chọn danh mục");
+      return;
+    }
+
+    // TODO: Thực hiện lưu sản phẩm
+    
+    // Hiển thị thông báo thành công
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Lưu sản phẩm thành công"),
+        backgroundColor: Colors.green,
+      ),
+    );
+    
+    // Xóa dữ liệu đã nhập để thêm sản phẩm mới
+    _clearForm();
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
+  // Xóa form để thêm sản phẩm mới
+  void _clearForm() {
+    setState(() {
+      _productNameController.clear();
+      _priceController.clear();
+      _costPriceController.clear();
+      _salePriceController.clear();
+      _productCodeController.clear();
+      _quantityController.clear();
+      _descriptionController.clear();
+      _barcodeController.clear();
+      imageFileList.clear();
+      _selectedCategory = null;
+    });
   }
 
   Widget _buildLabel(String label) {
@@ -317,11 +397,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
       label,
       style: const TextStyle(
         fontWeight: FontWeight.bold,
+        fontSize: 16,
       ),
     );
   }
 
-  /// Tạo TextField cho giá (giá bán, giá vốn, giá khuyến mãi)
+  // Tạo TextField cho giá (giá bán, giá vốn, giá khuyến mãi)
   Widget _buildPriceField(String label, TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -332,25 +413,34 @@ class _AddProductScreenState extends State<AddProductScreen> {
           keyboardType: TextInputType.number,
           decoration: const InputDecoration(
             hintText: "0.000",
+            border: OutlineInputBorder(),
+            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildTextField(
-      {required String label,
-      required TextEditingController controller,
-      Widget? suffixIcon}) {
+  // Tạo TextField
+  Widget _buildTextField({
+    required String label,
+    required TextEditingController controller,
+    Widget? suffixIcon, 
+    TextInputType? keyboardType,
+    int maxLines = 1,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildLabel(label),
         TextField(
-          maxLines: null,
           controller: controller,
+          keyboardType: keyboardType,
+          maxLines: maxLines,
           decoration: InputDecoration(
             suffixIcon: suffixIcon,
+            border: const OutlineInputBorder(),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           ),
         ),
       ],
