@@ -1,5 +1,6 @@
 // Widget hiển thị 1 thẻ sản phẩm (Card)
 import 'package:admin/models/product_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class ProductCard extends StatelessWidget {
@@ -8,6 +9,8 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Tối ưu hóa URL ảnh với kích thước nhỏ hơn
+    String optimizedUrl = "${product.profileImage}?w=150&h=150&c=fill";
     return Card(
       elevation: 8,
       shape: RoundedRectangleBorder(
@@ -22,11 +25,31 @@ class ProductCard extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              // Khu vực icon sản phẩm
+              // Khu vực hình ảnh sản phẩm
               Expanded(
                 flex: 2,
                 child: product.profileImage != null
-                    ? Image.network(product.profileImage!)
+                    ? CachedNetworkImage(
+                        imageUrl: optimizedUrl,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                        placeholder: (context, url) => 
+                        Image.asset(
+                          'assets/placeholder.jpg',
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
+                        ),
+                        errorWidget: (context, url, error) => Icon(
+                          Icons.error,
+                          size: 70,
+                          color: const Color.fromARGB(255, 207, 204, 204),
+                        ),
+                        fadeInDuration: const Duration(
+                            milliseconds: 200), // Tăng tốc hiệu ứng
+                        fadeOutDuration: const Duration(milliseconds: 200),
+                      )
                     : const Icon(Icons.image, size: 70, color: Colors.grey),
               ),
               const SizedBox(height: 16),

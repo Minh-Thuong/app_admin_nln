@@ -15,6 +15,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
   ProductBloc(this._productRepository) : super(ProductInitial()) {
     on<LoadProducts>(_onLoadProducts);
+    on<CreateProductRequest>(_onCreateProduct);
   }
 
   Future<void> _onLoadProducts(
@@ -28,5 +29,15 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     }
   }
 
-
+  Future<void> _onCreateProduct(
+      CreateProductRequest event, Emitter<ProductState> emit) async {
+    emit(ProductLoading());
+    try {
+      final result = await _productRepository.createProduct(event.product);
+      emit(ProductCreated(result));
+    } catch (e) {
+      emit(ProductError(e.toString()));
+      rethrow;
+    }
+  }
 }

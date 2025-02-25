@@ -89,6 +89,7 @@ class _CreateCategoryScreen extends State<CreateCategoryScreen> {
     //   name: _categoryNameController.text,
     //   image: _selectedImage!,
     // ));
+    print("$_selectedImage");
     context.read<CategoryBloc>().add(CreateCategoryRequested(
         name: _categoryNameController.text, image: _selectedImage!));
 
@@ -125,7 +126,18 @@ class _CreateCategoryScreen extends State<CreateCategoryScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (_selectedImage != null) closeImage(),
+            if (_selectedImage != null)
+              closeImage()
+            else
+              Container(
+                alignment: Alignment.center,
+                color: Colors.greenAccent,
+                height: 40.h,
+                child: Text(
+                  "Chưa có ảnh nào",
+                  textAlign: TextAlign.center,
+                ),
+              ),
             SizedBox(
               height: 16.h,
             ),
@@ -158,7 +170,7 @@ class _CreateCategoryScreen extends State<CreateCategoryScreen> {
                         SnackBar(content: Text("Danh mục đã tồn tại")),
                       );
                     }
-    
+
                     if (state is CategoryCreated) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(

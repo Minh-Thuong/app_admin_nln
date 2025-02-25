@@ -10,3 +10,12 @@ sealed class ProductEvent extends Equatable {
 class LoadProducts extends ProductEvent {}
 
 class RefreshProducts extends ProductEvent {}
+
+class CreateProductRequest extends ProductEvent {
+  final Product product;
+  const CreateProductRequest(this.product);
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [product];
+}

@@ -4,6 +4,7 @@ import 'package:admin/models/product_model.dart';
 
 abstract class IProductRepository {
   Future<List<Product>> getProducts(); // Phân trang
+  Future<Product> createProduct(Product product);
 }
 
 class ProductsRepository implements IProductRepository {
@@ -20,4 +21,16 @@ class ProductsRepository implements IProductRepository {
       rethrow;
     }
   }
+  
+  @override
+  Future<Product> createProduct(Product product) async {
+   try {
+     final result = await _productDatasource.createProduct(product);
+     return result;
+   } catch (e) {
+     rethrow;
+   }
+  }
+
+
 }

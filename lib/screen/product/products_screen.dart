@@ -5,12 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class ProductsScreen extends StatelessWidget {
+class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  _ProductsScreenState createState() => _ProductsScreenState();
+}
+
+class _ProductsScreenState extends State<ProductsScreen> {
+  @override
+  void initState() {
+    super.initState();
     context.read<ProductBloc>().add(LoadProducts());
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return BlocBuilder<ProductBloc, ProductState>(
       builder: (context, state) {
         if (state is ProductLoading) {
@@ -67,17 +77,19 @@ class ProductsScreen extends StatelessWidget {
                   bottom: 50.h,
                   right: 25.w,
                   child: FloatingActionButton(
-                    shape: const CircleBorder(
-                        side: BorderSide(color: Colors.white)),
+                    shape: const CircleBorder(side: BorderSide(color: Colors.white)),
                     backgroundColor: Colors.blue,
                     child: const Icon(Icons.add),
-                    onPressed: () {
-                      Navigator.push(
+                    onPressed: () async {
+                      final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const AddProductScreen(),
                         ),
                       );
+                      if (result == true && context.mounted) {
+                        context.read<ProductBloc>().add(LoadProducts());
+                      }
                     },
                   ),
                 ),

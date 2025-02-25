@@ -36,25 +36,30 @@ class _ProductGridViewState extends State<ProductGridView> {
             onRefresh: () async {
               context.read<ProductBloc>().add(LoadProducts());
             },
-            child: GridView.builder(
+            child: CustomScrollView(
+              cacheExtent:
+                  2000, //Giữ widget trong phạm vi 2000 pixel ngoài màn hình
               controller: _scrollController,
-              padding: const EdgeInsets.all(8.0),
-              itemCount: state.products.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 8.0,
-                crossAxisSpacing: 8.0,
-                childAspectRatio: 0.7,
-              ),
-              itemBuilder: (context, index) {
-                if (index >= state.products.length) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-
-                return ProductCard(product: state.products[index]);
-              },
+              slivers: [
+                // SliverGrid sử dụng grid delegate để điều khiển lưới
+                SliverGrid(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      return ProductCard(product: state.products[index]);
+                    },
+                    childCount: state.products.length,
+                  ),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2, // Số cột trong grid
+                    mainAxisSpacing:
+                        8.0, // Khoảng cách giữa các phần tử theo chiều dọc
+                    crossAxisSpacing:
+                        8.0, // Khoảng cách giữa các phần tử theo chiều ngang
+                    childAspectRatio:
+                        0.7, // Tỉ lệ chiều cao của các mục trong grid
+                  ),
+                ),
+              ],
             ),
           );
         }

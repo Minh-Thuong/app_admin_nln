@@ -20,7 +20,7 @@ class Product {
       this.stock,
       this.profileImage,
       this.cloudinaryImageId,
-      this.categoryId});
+      this.categoryId, required String category});
 
   Product.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -46,6 +46,12 @@ class Product {
     data['cloudinaryImageId'] = cloudinaryImageId;
     data['categoryId'] = categoryId;
     return data;
+  }
+
+// Định nghĩa phương thức toString() để hiển thị đối tượng dễ đọc hơn
+  @override
+  String toString() {
+    return 'Product{id: $id, name: $name, description: $description, price: $price, sale: $sale, stock: $stock, profileImage: $profileImage, cloudinaryImageId: $cloudinaryImageId, categoryId: $categoryId}';
   }
 
 }
