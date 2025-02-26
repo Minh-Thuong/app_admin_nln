@@ -1,7 +1,13 @@
 import 'package:admin/bloc/auth/bloc/auth_bloc.dart';
+import 'package:admin/bloc/category/bloc/category_bloc.dart';
+import 'package:admin/bloc/product/bloc/product_bloc.dart';
 import 'package:admin/datasource/auth_datasource.dart';
+import 'package:admin/datasource/category_datasource.dart';
+import 'package:admin/datasource/product_datasource.dart';
 import 'package:admin/dio/dio_client.dart';
 import 'package:admin/repository/auth_repository.dart';
+import 'package:admin/repository/category_repository.dart';
+import 'package:admin/repository/product_repository.dart';
 import 'package:admin/screen/home_screen.dart';
 import 'package:admin/screen/login/login_screen.dart';
 import 'package:admin/screen/signup/signup_screen.dart';
@@ -24,7 +30,13 @@ void main(List<String> args) {
   runApp(ScreenUtilInit(
     designSize: const Size(375, 812),
     builder: (context, child) {
-      return StoreManagementApp(authRepository: authRepository);
+      return MultiBlocProvider(
+        providers: [
+          BlocProvider (create: (context) => AuthBloc(authRepository),),
+          BlocProvider(create: (context) => CategoryBloc(CategoriesRepository(CategoryRemote(dio: DioClient.instance)))),
+          BlocProvider(create: (context) => ProductBloc(ProductsRepository(ProductRemote(dio: DioClient.instance)))),
+        ],
+        child: StoreManagementApp(authRepository: authRepository));
     },
   ));
 }
@@ -35,12 +47,9 @@ class StoreManagementApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AuthBloc(authRepository),
-      child: MaterialApp(
-        home: LoginScreen(),
-        debugShowCheckedModeBanner: false,
-      ),
+    return MaterialApp(
+      home: LoginScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
