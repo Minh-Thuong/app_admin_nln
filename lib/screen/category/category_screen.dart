@@ -2,12 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:admin/bloc/category/bloc/category_bloc.dart';
-import 'package:admin/models/category_model.dart';
 import 'package:admin/screen/category/category_detail_screen.dart';
 import 'package:admin/screen/category/create_category_screen.dart';
-import 'package:admin/datasource/category_datasource.dart';
-import 'package:admin/dio/dio_client.dart';
-import 'package:admin/repository/category_repository.dart';
 
 class CategoryScreen extends StatelessWidget {
   const CategoryScreen({super.key});

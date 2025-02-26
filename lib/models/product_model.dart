@@ -20,7 +20,7 @@ class Product {
       this.stock,
       this.profileImage,
       this.cloudinaryImageId,
-      this.categoryId, required String category});
+      this.categoryId,  required String category});
 
   Product.fromJson(Map<String, dynamic> json) {
     id = json['id'];

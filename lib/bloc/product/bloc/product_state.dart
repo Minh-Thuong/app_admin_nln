@@ -33,6 +33,15 @@ class ProductCreated extends ProductState {
   const ProductCreated(this.product);
 
   @override
-  
   List<Object> get props => [product];
 }
+
+class ProductUpdated extends ProductState {
+  final Product product;
+  const ProductUpdated(this.product);
+
+  @override
+  List<Object> get props => [product];
+}
+
+class ProductDeleted extends ProductState {}

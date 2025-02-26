@@ -48,3 +48,5 @@ class CategoryUpdated extends CategoryState {
 }
 
 class CategoryDeleted extends CategoryState {}
+
+

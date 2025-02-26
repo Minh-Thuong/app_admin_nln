@@ -7,6 +7,8 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 abstract class ProductDataSource {
   Future<List<Product>> getProducts();
   Future<Product> createProduct(Product product);
+  Future<Product> updateProduct(Product product, XFile? newImage);
+  Future<void> deleteProduct(String id);
 }
 
 class ProductRemote implements ProductDataSource {
@@ -42,7 +44,7 @@ class ProductRemote implements ProductDataSource {
     }
 
     // Lấy đường dẫn ảnh
-  String profileImagePath = product.profileImage ?? '';
+    String profileImagePath = product.profileImage ?? '';
 
     FormData formData = FormData.fromMap({
       'name': product.name,
@@ -52,8 +54,9 @@ class ProductRemote implements ProductDataSource {
       'stock': product.stock,
       'category': product.categoryId,
       'profileImage': profileImagePath.isNotEmpty
-        ? await MultipartFile.fromFile(profileImagePath, filename: profileImagePath.split('/').last)
-        : null,  // Tải ảnh lên nếu có
+          ? await MultipartFile.fromFile(profileImagePath,
+              filename: profileImagePath.split('/').last)
+          : null, // Tải ảnh lên nếu có
     });
     try {
       final response = await dio.post('/api/products',
@@ -66,8 +69,7 @@ class ProductRemote implements ProductDataSource {
           ));
 
       print("Đang gửi dữ liệu: ${formData.fields}");
-       print("Đang gửi ảnh: ${profileImagePath}");
-
+      print("Đang gửi ảnh: $profileImagePath");
 
       if (response.statusCode == 200) {
         final results = response.data['result'];
@@ -87,6 +89,80 @@ class ProductRemote implements ProductDataSource {
     } catch (e) {
       // Xử lý các lỗi ngoài ý muốn, bao gồm lỗi kết nối mạng, server, v.v.
       throw Exception("Lỗi: ${e.toString()}");
+    }
+  }
+
+  @override
+  Future<Product> updateProduct(Product product, XFile? newImage) async {
+    final token = await TokenManager.getToken();
+    if (token == null || token.isEmpty) {
+      throw Exception("Token không hợp lệ");
+    }
+
+    FormData formData = FormData.fromMap({
+      'name': product.name,
+      'price': product.price,
+      'description': product.description,
+      'sale': product.sale,
+      'stock': product.stock,
+      'category':
+          product.categoryId, // Sửa 'category' thành 'categoryId' để khớp API
+      if (newImage != null)
+        'profileImage': await MultipartFile.fromFile(
+          newImage.path,
+          filename: newImage.name,
+        ),
+    });
+
+    try {
+      final response = await dio.put(
+        '/api/products/update/${product.id}',
+        data: formData,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
+      );
+
+      print("Response: ${response.data}");
+
+      if (response.statusCode == 200) {
+        final results = response.data['result'];
+        print(results);
+        if (results != null && results is Map<String, dynamic>) {
+          return Product.fromJson(results);
+        }
+      } else {
+        if (response.data['error'] == 'Sản phẩm đã tồn tại') {
+          throw Exception("Sản phẩm đã tồn tại");
+        } else {
+          throw Exception("API trả về lỗi: ${response.statusCode}");
+        }
+      }
+      throw Exception("Không thể tải sản phẩm");
+    } catch (e) {
+      throw Exception("Lỗi: ${e.toString()}");
+    }
+  }
+
+  @override
+  Future<void> deleteProduct(String id) async {
+    final token = await TokenManager.getToken();
+    if (token == null || token.isEmpty) {
+      throw Exception("Token không hợp lệ");
+    }
+
+    final response = await dio.delete(
+      '/api/products/delete/$id',
+      options: Options(
+        headers: {'Authorization': 'Bearer $token'},
+      ),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception("Xóa sản phẩm thất bại");
     }
   }
 }

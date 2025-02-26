@@ -1,7 +1,10 @@
 // Widget hiển thị 1 thẻ sản phẩm (Card)
+import 'package:admin/bloc/product/bloc/product_bloc.dart';
 import 'package:admin/models/product_model.dart';
+import 'package:admin/screen/product/product_detail_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
@@ -19,6 +22,13 @@ class ProductCard extends StatelessWidget {
       child: InkWell(
         onTap: () {
           // Xử lý khi bấm vào sản phẩm (mở trang chi tiết / sửa)
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ProductDetailScreen(
+                      product: product,
+                    )),
+          );
         },
         borderRadius: BorderRadius.circular(8),
         child: Padding(
@@ -34,8 +44,7 @@ class ProductCard extends StatelessWidget {
                         fit: BoxFit.cover,
                         width: double.infinity,
                         height: double.infinity,
-                        placeholder: (context, url) => 
-                        Image.asset(
+                        placeholder: (context, url) => Image.asset(
                           'assets/placeholder.jpg',
                           fit: BoxFit.cover,
                           width: double.infinity,

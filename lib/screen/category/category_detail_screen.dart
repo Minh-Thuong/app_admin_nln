@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:admin/bloc/category/bloc/category_bloc.dart';
 import 'package:admin/models/category_model.dart';
+import 'package:admin/util/image_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -42,55 +43,6 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
     super.dispose();
   }
 
-  Future<XFile?> compressImage(XFile image) async {
-    final filePath = image.path;
-    final lastIndex = filePath.lastIndexOf('.');
-    final outPath = "${filePath.substring(0, lastIndex)}_compressed.jpg";
-    var compressedFile = await FlutterImageCompress.compressAndGetFile(
-      filePath,
-      outPath,
-      quality: 75, // Giảm chất lượng ảnh xuống 75% để giảm dung lượng
-    );
-
-    return compressedFile;
-  }
-
-  Future<void> selectImages() async {
-    try {
-      final XFile? image = await _imagePicker.pickImage(
-        source: ImageSource.gallery,
-      );
-      if (image != null) {
-        final compressedImage = await compressImage(image);
-        if (compressedImage != null) {
-          final file = File(compressedImage.path);
-          final fileSize = await file.length();
-
-          if (fileSize > 2 * 1024 * 1024) {
-            // 2MB
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                  content: Text("Ảnh vẫn quá lớn! Hãy thử ảnh khác.")),
-            );
-            return;
-          }
-
-          setState(() {
-            _selectedImage = compressedImage;
-            _isNetworkImage = false;
-            _networkImageUrl = null;
-          });
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Không thể chọn ảnh")),
-        );
-      }
-    }
-  }
-
   void _showDeleteDialog() {
     // hiển thị hộp thoại xác nhận
     showDialog(
@@ -130,7 +82,6 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
       return;
     }
 // Chỉ cần gửi tên mới nếu có thay đổi
-    XFile? image = _selectedImage;
     context.read<CategoryBloc>().add(
           UpdateCategoryRequested(
             id: widget.category.id,
@@ -182,7 +133,13 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
           IconButton(
             iconSize: 32,
             icon: const Icon(Icons.camera_enhance),
-            onPressed: selectImages,
+            onPressed: () {
+              selectImages(context, _imagePicker, (image) {
+                setState(() {
+                  _selectedImage = image;
+                });
+              });
+            },
           ),
         ],
       ),

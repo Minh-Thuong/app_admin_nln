@@ -19,3 +19,18 @@ class CreateProductRequest extends ProductEvent {
   // TODO: implement props
   List<Object> get props => [product];
 }
+
+class UpdateProductRequest extends ProductEvent {
+  final Product product;
+  final XFile? newImage;
+  const UpdateProductRequest(this.product, this.newImage);
+
+  @override
+  List<Object> get props => [product, newImage ?? Object()];
+}
+
+class DeleteProductRequest extends ProductEvent {
+  final String id;
+  const DeleteProductRequest({required this.id});
+
+}
