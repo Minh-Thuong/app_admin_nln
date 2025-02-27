@@ -8,7 +8,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
-  const ProductCard({super.key, required this.product});
+  final VoidCallback onRefresh; // Callback để tải lại dữ liệu
+  const ProductCard({super.key, required this.product, required this.onRefresh});
 
   @override
   Widget build(BuildContext context) {
@@ -21,14 +22,17 @@ class ProductCard extends StatelessWidget {
           side: const BorderSide(color: Color.fromARGB(255, 152, 187, 134))),
       child: InkWell(
         onTap: () {
-          // Xử lý khi bấm vào sản phẩm (mở trang chi tiết / sửa)
-          Navigator.push(
+         // Chuyển sang ProductDetailScreen và chờ kết quả
+          final result = Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => ProductDetailScreen(
                       product: product,
                     )),
           );
+          if (result == true) {
+            onRefresh();
+          }
         },
         borderRadius: BorderRadius.circular(8),
         child: Padding(

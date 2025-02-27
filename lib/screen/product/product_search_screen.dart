@@ -7,13 +7,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class ProductSearchScreen extends StatelessWidget {
+class ProductSearchScreen extends StatefulWidget {
   const ProductSearchScreen({super.key});
 
   @override
+  State<ProductSearchScreen> createState() => _ProductSearchScreenState();
+}
+
+class _ProductSearchScreenState extends State<ProductSearchScreen> {
+  @override
   Widget build(BuildContext context) {
     final TextEditingController searchController = TextEditingController();
-
+    String currentQuery = ""; // Lưu từ khóa hiện tại
+    int page = 0; // Lưu trang hiện tại
+    int limit = 10; // Lưu giới hạn hiện tại
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
@@ -23,12 +30,12 @@ class ProductSearchScreen extends StatelessWidget {
           child: TextField(
             controller: searchController,
             onSubmitted: (query) {
-              final queryText = searchController.text;
-              final page = 0;
-              final limit = 10;
+              setState(() {
+                currentQuery = query; // Cập nhật từ khóa hiện tại
+              });
               context
                   .read<ProductBloc>()
-                  .add(SearchProducts(queryText, page, limit));
+                  .add(SearchProducts(currentQuery, page, limit));
             },
             decoration: InputDecoration(
               hintText: "Tìm tên, mã SKU, ...",
@@ -54,7 +61,9 @@ class ProductSearchScreen extends StatelessWidget {
           }
 
           if (state is ProductLoaded) {
-            return ProductGridView();
+            return ProductGridView(
+              onRefresh: () => context.read<ProductBloc>().add(LoadProducts()),
+            );
           }
 
           return const Center(child: Text("Nhập từ khóa để tìm kiếm"));

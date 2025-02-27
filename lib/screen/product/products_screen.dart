@@ -98,11 +98,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
             ),
             body: Stack(
               children: [
-                const TabBarView(
+                TabBarView(
                   children: [
-                    ProductGridView(),
-                    Center(child: Text("Tồn kho")),
-                    Center(child: Text("Bán kèm")),
+                    ProductGridView(
+                      onRefresh: () =>
+                          context.read<ProductBloc>().add(LoadProducts()),
+                    ),
+                    const Center(child: Text("Tồn kho")),
+                    const Center(child: Text("Bán kèm")),
                   ],
                 ),
                 Positioned(

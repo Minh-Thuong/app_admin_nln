@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProductGridView extends StatefulWidget {
-  const ProductGridView({super.key});
+  final VoidCallback onRefresh;
+  const ProductGridView({super.key, required this.onRefresh});
 
   @override
   _ProductGridViewState createState() => _ProductGridViewState();
@@ -34,7 +35,7 @@ class _ProductGridViewState extends State<ProductGridView> {
         if (state is ProductLoaded) {
           return RefreshIndicator(
             onRefresh: () async {
-              context.read<ProductBloc>().add(LoadProducts());
+              widget.onRefresh();
             },
             child: CustomScrollView(
               cacheExtent:
@@ -45,7 +46,9 @@ class _ProductGridViewState extends State<ProductGridView> {
                 SliverGrid(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                      return ProductCard(product: state.products[index]);
+                      return ProductCard(
+                          product: state.products[index],
+                          onRefresh: widget.onRefresh);   // Truyền callback xuống ProductCard
                     },
                     childCount: state.products.length,
                   ),
