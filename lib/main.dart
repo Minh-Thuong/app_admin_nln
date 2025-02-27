@@ -34,7 +34,7 @@ void main(List<String> args) {
         providers: [
           BlocProvider (create: (context) => AuthBloc(authRepository),),
           BlocProvider(create: (context) => CategoryBloc(CategoriesRepository(CategoryRemote(dio: DioClient.instance)))),
-          BlocProvider(create: (context) => ProductBloc(ProductsRepository(ProductRemote(dio: DioClient.instance)))),
+         BlocProvider(create: (context) => ProductBloc(ProductsRepository(ProductRemote(dio: DioClient.instance)))),
         ],
         child: StoreManagementApp(authRepository: authRepository));
     },

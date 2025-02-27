@@ -7,6 +7,7 @@ import 'package:admin/screen/product/category_selection_screen.dart';
 import 'package:admin/service/product_form_logic.dart';
 import 'package:admin/util/image_handler.dart';
 import 'package:admin/widgets/product_form_widgets.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

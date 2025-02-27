@@ -1,6 +1,10 @@
 import 'package:admin/bloc/product/bloc/product_bloc.dart';
+import 'package:admin/datasource/product_datasource.dart';
+import 'package:admin/dio/dio_client.dart';
+import 'package:admin/repository/product_repository.dart';
 import 'package:admin/screen/product/addproduct_screen.dart';
 import 'package:admin/screen/product/product_gridview.dart';
+import 'package:admin/screen/product/product_search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,9 +17,17 @@ class ProductsScreen extends StatefulWidget {
 }
 
 class _ProductsScreenState extends State<ProductsScreen> {
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     context.read<ProductBloc>().add(LoadProducts());
+  //   });
+  // }
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Gọi sự kiện LoadProducts sau khi dependencies đã được khởi tạo
     context.read<ProductBloc>().add(LoadProducts());
   }
 
@@ -26,11 +38,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
         if (state is ProductLoading) {
           return const Center(child: CircularProgressIndicator());
         }
-
         if (state is ProductError) {
           return Center(child: Text("Lỗi: ${state.message}"));
         }
-
         return DefaultTabController(
           length: 3,
           child: Scaffold(
@@ -39,17 +49,39 @@ class _ProductsScreenState extends State<ProductsScreen> {
               elevation: 0,
               title: SizedBox(
                 height: 40.h,
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: "Tìm tên, mã SKU, ...",
-                    prefixIcon: const Icon(Icons.search),
-                    filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                    border: OutlineInputBorder(
+                child: TextButton(
+                  // Trong ProductsScreen, thay đổi phần onPressed của TextButton
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BlocProvider(
+                          create: (context) => ProductBloc(
+                            ProductsRepository(
+                                ProductRemote(dio: DioClient.instance)),
+                          ),
+                          child: const ProductSearchScreen(),
+                        ),
+                      ),
+                    );
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide.none,
                     ),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                  ),
+                  child: Row(
+                    children: const [
+                      SizedBox(width: 8),
+                      Icon(Icons.search, color: Colors.black54, size: 25),
+                      SizedBox(width: 8),
+                      Text(
+                        "Tìm tên, mã SKU, ...",
+                        style: TextStyle(color: Colors.black54, fontSize: 14),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -77,7 +109,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   bottom: 50.h,
                   right: 25.w,
                   child: FloatingActionButton(
-                    shape: const CircleBorder(side: BorderSide(color: Colors.white)),
+                    shape: const CircleBorder(
+                        side: BorderSide(color: Colors.white)),
                     backgroundColor: Colors.blue,
                     child: const Icon(Icons.add),
                     onPressed: () async {

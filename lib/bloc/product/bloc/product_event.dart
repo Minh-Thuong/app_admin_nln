@@ -32,5 +32,11 @@ class UpdateProductRequest extends ProductEvent {
 class DeleteProductRequest extends ProductEvent {
   final String id;
   const DeleteProductRequest({required this.id});
+}
 
+class SearchProducts extends ProductEvent {
+  final String query;
+  final int page;
+  final int limit;
+  const SearchProducts(this.query, this.page, this.limit);
 }

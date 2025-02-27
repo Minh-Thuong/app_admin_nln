@@ -17,6 +17,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<CreateProductRequest>(_onCreateProduct);
     on<UpdateProductRequest>(_onUpdateProduct);
     on<DeleteProductRequest>(_ondeleteProduct);
+    on<SearchProducts>(_onSearchProducts);
   }
 
   Future<void> _onLoadProducts(
@@ -49,6 +50,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       final result =
           await _productRepository.updateProduct(event.product, event.newImage);
       emit(ProductUpdated(result));
+      
     } catch (e) {
       emit(ProductError(e.toString()));
       rethrow;
@@ -66,6 +68,20 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     } catch (e) {
       emit(ProductError(e.toString()));
       rethrow;
+    }
+  }
+
+  Future<void> _onSearchProducts(
+      SearchProducts event, Emitter<ProductState> emit) async {
+    emit(ProductLoading());
+    try {
+      print("Query sent: ${event.query}"); // Log từ khóa gửi đi
+      final result = await _productRepository.searchProducts(
+          event.query, event.page, event.limit);
+      // emit(ProductSearchResult(result));
+      emit(ProductLoaded(result));
+    } catch (e) {
+      emit(ProductError(e.toString()));
     }
   }
 }
