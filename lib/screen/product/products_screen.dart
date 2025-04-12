@@ -1,8 +1,12 @@
+import 'package:admin/bloc/category/bloc/category_bloc.dart';
 import 'package:admin/bloc/product/bloc/product_bloc.dart';
+import 'package:admin/datasource/category_datasource.dart';
 import 'package:admin/datasource/product_datasource.dart';
 import 'package:admin/dio/dio_client.dart';
+import 'package:admin/repository/category_repository.dart';
 import 'package:admin/repository/product_repository.dart';
 import 'package:admin/screen/product/addproduct_screen.dart';
+import 'package:admin/screen/product/product_category_screen.dart';
 import 'package:admin/screen/product/product_gridview.dart';
 import 'package:admin/screen/product/product_search_screen.dart';
 import 'package:flutter/material.dart';
@@ -16,23 +20,20 @@ class ProductsScreen extends StatefulWidget {
   _ProductsScreenState createState() => _ProductsScreenState();
 }
 
-class _ProductsScreenState extends State<ProductsScreen> {
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     context.read<ProductBloc>().add(LoadProducts());
-  //   });
-  // }
+class _ProductsScreenState extends State<ProductsScreen>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Gọi sự kiện LoadProducts sau khi dependencies đã được khởi tạo
     context.read<ProductBloc>().add(LoadProducts());
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return BlocBuilder<ProductBloc, ProductState>(
       builder: (context, state) {
         if (state is ProductLoading) {
@@ -42,7 +43,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
           return Center(child: Text("Lỗi: ${state.message}"));
         }
         return DefaultTabController(
-          length: 3,
+          length: 2,
           child: Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.green,
@@ -50,16 +51,17 @@ class _ProductsScreenState extends State<ProductsScreen> {
               title: SizedBox(
                 height: 40.h,
                 child: TextButton(
-                  // Trong ProductsScreen, thay đổi phần onPressed của TextButton
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => BlocProvider(
-                          create: (context) => ProductBloc(
+                        // nếu dùng BlocProvider.value thì khi chỉnh sửa xong
+                        //quay trở về màn hình hình sản phẩm thì sẽ bị mất dữ liệu
+                        builder: (_) => BlocProvider(
+                          create: (_) => ProductBloc(
                             ProductsRepository(
                                 ProductRemote(dio: DioClient.instance)),
-                          ),
+                          )..add(LoadProducts()),
                           child: const ProductSearchScreen(),
                         ),
                       ),
@@ -91,8 +93,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 indicatorColor: Colors.white,
                 tabs: [
                   Tab(text: "Sản phẩm"),
-                  Tab(text: "Bán kèm"),
-                  Tab(text: "Tồn kho"),
+                  Tab(text: "Danh mục"),
                 ],
               ),
             ),
@@ -100,12 +101,25 @@ class _ProductsScreenState extends State<ProductsScreen> {
               children: [
                 TabBarView(
                   children: [
-                    ProductGridView(
-                      onRefresh: () =>
-                          context.read<ProductBloc>().add(LoadProducts()),
+                    if (state is ProductLoaded)
+                      ProductGridView(
+                        products: state.products,
+                        onRefresh: () =>
+                            context.read<ProductBloc>().add(LoadProducts()),
+                      )
+                    else
+                      const Center(child: Text("Không có sản phẩm")),
+                    BlocProvider(
+                      create: (context) => CategoryBloc(
+                        CategoriesRepository(
+                            CategoryRemote(dio: DioClient.instance)),
+                      )..add(LoadCategories()),
+                      child: ProductCategoryScreen(
+                        onRefresh: () {
+                          context.read<CategoryBloc>().add(LoadCategories());
+                        },
+                      ),
                     ),
-                    const Center(child: Text("Tồn kho")),
-                    const Center(child: Text("Bán kèm")),
                   ],
                 ),
                 Positioned(

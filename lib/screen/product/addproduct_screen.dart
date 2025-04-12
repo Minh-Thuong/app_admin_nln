@@ -98,8 +98,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 ),
                 const SizedBox(width: 16),
                 BlocConsumer<ProductBloc, ProductState>(
-                  listener: (context, state) =>
-                      handleProductState(context, state, _clearForm),
+                  listener: (context, state) => handleProductState(
+                      context, state, _clearForm, _onProductAdded),
                   builder: (context, state) {
                     return Expanded(
                       child: ElevatedButton(
@@ -119,6 +119,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
         ),
       ),
     );
+  }
+
+  void _onProductAdded() {
+    // Ví dụ: Điều hướng về màn hình trước
+    Navigator.pop(context);
   }
 
   void _openCategorySelection() async {
@@ -155,7 +160,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
       description: _descriptionController.text,
       categoryId: _selectedCategory!.id,
       profileImage: _selectedImage?.path,
-      category: '',
     );
 
     context.read<ProductBloc>().add(CreateProductRequest(product));

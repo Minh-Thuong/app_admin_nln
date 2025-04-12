@@ -54,4 +54,11 @@ class ProductSearchResult extends ProductState {
   List<Object> get props => [products];
 }
 
+class ProductSearchCategoryResult extends ProductState {
+  final List<Product> products;
 
+  const ProductSearchCategoryResult(this.products);
+
+  @override
+  List<Object> get props => [products];
+}

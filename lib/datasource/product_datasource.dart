@@ -10,6 +10,8 @@ abstract class ProductDataSource {
   Future<Product> updateProduct(Product product, XFile? newImage);
   Future<void> deleteProduct(String id);
   Future<List<Product>> searchProducts(String query, int page, int limit);
+  Future<List<Product>> searchProductswithCategory(
+      String query, int page, int limit);
 }
 
 class ProductRemote implements ProductDataSource {
@@ -160,13 +162,14 @@ class ProductRemote implements ProductDataSource {
       options: Options(
         headers: {
           'Authorization': 'Bearer $token',
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
         },
       ),
     );
-
-    if (response.statusCode != 200) {
-      throw Exception("Xóa sản phẩm thất bại");
+    if (response.statusCode == 200) {
+      print("Xóa sản phẩm thành công");
+    } else {
+      throw Exception("Xóa sản phẩm thất bại ${response.statusCode}");
     }
   }
 
@@ -181,6 +184,32 @@ class ProductRemote implements ProductDataSource {
       // Gửi yêu cầu GET
       final response = await dio.get(
         '/api/products/search?name=$encodedQuery&page=$page&size=$limit',
+        options: Options(headers: {'Content-Type': 'application/json'}),
+      );
+
+      print("Mã trạng thái: ${response.statusCode}");
+      print("Dữ liệu nhận về: ${response.data}");
+
+      if (response.statusCode == 200) {
+        final List<dynamic> results = response.data['result']['content'];
+        print("Results API: $results"); // Kiểm tra dữ liệu
+        return results.map((product) => Product.fromJson(product)).toList();
+      }
+
+      throw Exception("Không tìm thấy sản phẩm");
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? "Lỗi kết nối API");
+    } catch (e) {
+      throw Exception("Lỗi không xác định: ${e.toString()}");
+    }
+  }
+
+  @override
+  Future<List<Product>> searchProductswithCategory(
+      String categoryId, int page, int limit) async {
+    try {
+      final response = await dio.get(
+        '/api/products/category?categoryId=$categoryId&page=$page&size=$limit',
         options: Options(headers: {'Content-Type': 'application/json'}),
       );
 

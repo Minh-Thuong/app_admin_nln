@@ -37,3 +37,41 @@ class AuthSignupLoaded extends AuthState {
   @override
   List<Object> get props => [result];
 }
+
+class GetCustomerLoaded extends AuthState {
+  final List<User> user;
+
+  const GetCustomerLoaded({required this.user});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [user];
+}
+
+class GetCustomerFailure extends AuthState {
+  final String error;
+  const GetCustomerFailure({required this.error});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [error];
+}
+
+class GetCustomerByIDSuccess extends AuthState {
+  final User user;
+
+  const GetCustomerByIDSuccess({required this.user});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [user];
+}
+
+class GetCustomerByIDFailure extends AuthState {
+  final String error;
+  const GetCustomerByIDFailure({required this.error});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [error];
+}

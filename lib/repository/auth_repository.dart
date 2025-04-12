@@ -1,11 +1,16 @@
 import 'package:admin/datasource/auth_datasource.dart';
+import 'package:admin/models/user.dart';
 import 'package:either_dart/either.dart';
 
 abstract class IAuthRepository {
   Future<Either<String, String>> login(String email, String password);
+
   Future<void> logout();
   Future<Either<String, bool>> signup(
       String name, String email, String phone, String address, String password);
+
+  Future<List<User>> getALLcustomer();
+  Future<User> getCustomerById(String id);
 }
 
 class AuthenticationRepository extends IAuthRepository {
@@ -42,6 +47,26 @@ class AuthenticationRepository extends IAuthRepository {
       return Right(result);
     } catch (e) {
       return Left(e.toString());
+    }
+  }
+
+  @override
+  Future<List<User>> getALLcustomer() async {
+    try {
+      final result = await _authenticationDatasource.getALLcustomer();
+      return result;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+  
+  @override
+  Future<User> getCustomerById(String id) async {
+   try {
+      final result = await _authenticationDatasource.getCustomerById(id);
+      return result;
+    } catch (e) {
+      throw Exception(e.toString());
     }
   }
 }

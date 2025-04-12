@@ -35,3 +35,14 @@ class AuthSignupRequest extends AuthEvent {
   @override
   List<Object> get props => [name, email, phone, address, password];
 }
+
+class GetAllCustomer extends AuthEvent {}
+
+class GetCustomerById extends AuthEvent {
+  final String id;
+
+  const GetCustomerById(this.id);
+
+  @override
+  List<Object> get props => [id];
+}

@@ -9,14 +9,11 @@ sealed class ProductEvent extends Equatable {
 
 class LoadProducts extends ProductEvent {}
 
-class RefreshProducts extends ProductEvent {}
-
 class CreateProductRequest extends ProductEvent {
   final Product product;
   const CreateProductRequest(this.product);
 
   @override
-  // TODO: implement props
   List<Object> get props => [product];
 }
 
@@ -39,4 +36,11 @@ class SearchProducts extends ProductEvent {
   final int page;
   final int limit;
   const SearchProducts(this.query, this.page, this.limit);
+}
+
+class FilterProductsByCategory extends ProductEvent {
+  final String query;
+  final int page;
+  final int limit;
+  const FilterProductsByCategory(this.query, this.page, this.limit);
 }

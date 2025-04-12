@@ -1,7 +1,4 @@
 import 'package:admin/bloc/product/bloc/product_bloc.dart';
-import 'package:admin/datasource/product_datasource.dart';
-import 'package:admin/dio/dio_client.dart';
-import 'package:admin/repository/product_repository.dart';
 import 'package:admin/screen/product/product_gridview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,23 +12,42 @@ class ProductSearchScreen extends StatefulWidget {
 }
 
 class _ProductSearchScreenState extends State<ProductSearchScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _focusNode = FocusNode(); // FocusNode để kiểm soát focus
+  String currentQuery = "";
+  int page = 0;
+  int limit = 10;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    Future.delayed(Duration(milliseconds: 300), () {
+      _focusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _searchController.dispose();
+    _focusNode.dispose();
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final TextEditingController searchController = TextEditingController();
-    String currentQuery = ""; // Lưu từ khóa hiện tại
-    int page = 0; // Lưu trang hiện tại
-    int limit = 10; // Lưu giới hạn hiện tại
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
         elevation: 0,
         title: SizedBox(
-          height: 40.h, // Hoặc bất kỳ chiều cao nào mà bạn muốn
+          height: 40.h,
           child: TextField(
-            controller: searchController,
+            controller: _searchController,
             onSubmitted: (query) {
               setState(() {
-                currentQuery = query; // Cập nhật từ khóa hiện tại
+                currentQuery = query;
               });
               context
                   .read<ProductBloc>()
@@ -59,13 +75,20 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
           if (state is ProductError) {
             return Center(child: Text(state.message));
           }
-
+          if (state is ProductSearchResult) {
+            return ProductGridView(
+              products: state.products,
+              onRefresh: () => context.read<ProductBloc>().add(
+                    SearchProducts(currentQuery, page, limit),
+                  ),
+            );
+          }
           if (state is ProductLoaded) {
             return ProductGridView(
+              products: state.products,
               onRefresh: () => context.read<ProductBloc>().add(LoadProducts()),
             );
           }
-
           return const Center(child: Text("Nhập từ khóa để tìm kiếm"));
         },
       ),

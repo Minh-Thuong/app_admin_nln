@@ -88,16 +88,12 @@ class CategoryScreen extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const CreateCategoryScreen(),
-            ),
-          );
-          if (result == true && context.mounted) {
-            context.read<CategoryBloc>().add(LoadCategories());
-          }
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CreateCategoryScreen(),
+              ));
         },
         child: const Icon(Icons.add),
       ),
