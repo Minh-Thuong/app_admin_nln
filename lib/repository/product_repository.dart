@@ -8,6 +8,8 @@ abstract class IProductRepository {
   Future<Product> createProduct(Product product);
   Future<Product> updateProduct(Product product, XFile? newImage);
   Future<void> deleteProduct(String id);
+  Future<List<Product>> searchProducts(String query, int page, int limit);
+  Future<List<Product>> searchProductswithCategory(String query, int page, int limit);
 }
 
 class ProductsRepository implements IProductRepository {
@@ -47,6 +49,24 @@ class ProductsRepository implements IProductRepository {
   Future<void> deleteProduct(String id) async {
     try {
       await _productDatasource.deleteProduct(id);
+    } catch (e) {
+      rethrow;
+    }
+  }
+  
+  @override
+  Future<List<Product>> searchProducts(String query, int page, int limit) {
+    try {
+      return _productDatasource.searchProducts(query, page, limit);
+    } catch (e) {
+      rethrow;
+    }
+  }
+  
+  @override
+  Future<List<Product>> searchProductswithCategory(String query, int page, int limit) {
+   try {
+      return _productDatasource.searchProductswithCategory(query, page, limit);
     } catch (e) {
       rethrow;
     }

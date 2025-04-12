@@ -8,6 +8,7 @@ import 'package:admin/screen/login/login_screen.dart';
 import 'package:admin/screen/receipt/import_screen.dart';
 import 'package:admin/screen/order/order_screen.dart';
 import 'package:admin/screen/product/products_screen.dart';
+import 'package:admin/screen/reports/reports_screen.dart';
 import 'package:admin/screen/supplier/supplier_screen.dart';
 import 'package:admin/screen/user/user_screen.dart';
 import 'package:admin/util/auth_action.dart';
@@ -15,7 +16,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeScreen extends StatelessWidget {
-  
   const HomeScreen({super.key});
 
   @override
@@ -32,10 +32,6 @@ class HomeScreen extends StatelessWidget {
         "icon": Icons.category,
         "label": "Quản lý danh mục",
         "color": const Color.fromARGB(255, 255, 191, 0),
-        // "page":  BlocProvider(
-        //   create: (context) => CategoryBloc(CategoriesRepository(CategoryRemote(dio: DioClient.instance))),
-        //   child: const CategoryScreen(),
-        // )
         "page": const CategoryScreen() // Bỏ BlocProvider ở đây
       },
       {
@@ -55,6 +51,12 @@ class HomeScreen extends StatelessWidget {
         "label": "Quản lý nhân viên",
         "color": const Color.fromARGB(255, 174, 16, 137),
         "page": const EmployeeScreen()
+      },
+      {
+        "icon": Icons.assignment_turned_in,
+        "label": "Thống kê báo cáo",
+        "color": const Color.fromARGB(255, 236, 85, 30),
+        "page":  ReportsScreen()
       },
       {
         "icon": Icons.assignment,

@@ -43,19 +43,19 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 50),
               // Logo
               Image.network(
-                "https://res.cloudinary.com/dnwp3ccn7/image/upload/v1739813369/b3r0xolfjdjilchpnvme.png",
+                "https://res.cloudinary.com/dnwp3ccn7/image/upload/v1744094734/e7z5altam2rsmawnrubx.png",
                 height: 150,
               ),
               const SizedBox(height: 16),
               // Tiêu đề
-              const Text(
-                "Women's Secret Beauty",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green,
-                ),
-              ),
+              // const Text(
+              //   "Women's Secret Beauty",
+              //   style: TextStyle(
+              //     fontSize: 28,
+              //     fontWeight: FontWeight.bold,
+              //     color: Colors.green,
+              //   ),
+              // ),
               const SizedBox(height: 8),
               const Text(
                 "Đăng nhập tài khoản",
@@ -71,19 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 16),
               // Ô nhập Password
               _buildPasswordTextField(Icons.lock, "Mật khẩu"),
-              const SizedBox(height: 16),
-              // Hoặc tiếp tục với
-              const Text("Hoặc", style: TextStyle(color: Colors.black)),
 
-              const SizedBox(height: 16),
-              // Nút Google & Facebook
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildSocialButton("Đăng nhập với Google",
-                      "https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA"),
-                ],
-              ),
               const SizedBox(height: 24),
               // Nút đăng nhập
               BlocConsumer<AuthBloc, AuthState>(
@@ -121,6 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   if (state is AuthLoaded) {
                     state.result.fold(
                       (error) {
+                        print(error);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
@@ -144,19 +133,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 16),
               // Tạo tài khoản mới
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const SignupScreen(),
-                    ),
-                  );
-                },
-                child: const Text(
-                  "Bạn chưa có tài khoản? Đăng ký ngay",
-                  style: TextStyle(color: Colors.green, fontSize: 16),
-                ),
-              )
+              // TextButton(
+              //   onPressed: () {
+              //     Navigator.of(context).push(
+              //       MaterialPageRoute(
+              //         builder: (_) => const SignupScreen(),
+              //       ),
+              //     );
+              //   },
+              //   child: const Text(
+              //     "Bạn chưa có tài khoản? Đăng ký ngay",
+              //     style: TextStyle(color: Colors.green, fontSize: 16),
+              //   ),
+              // )
             ],
           ),
         ),
@@ -208,19 +197,6 @@ class _LoginScreenState extends State<LoginScreen> {
           },
         ),
       ),
-    );
-  }
-
-  Widget _buildSocialButton(String text, String imagePath) {
-    return ElevatedButton.icon(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
-        side: const BorderSide(color: Colors.grey),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      ),
-      onPressed: () {},
-      icon: Image.network(imagePath, height: 24),
-      label: Text(text, style: const TextStyle(color: Colors.black)),
     );
   }
 }

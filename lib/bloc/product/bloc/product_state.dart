@@ -45,3 +45,20 @@ class ProductUpdated extends ProductState {
 }
 
 class ProductDeleted extends ProductState {}
+
+class ProductSearchResult extends ProductState {
+  final List<Product> products;
+  const ProductSearchResult(this.products);
+
+  @override
+  List<Object> get props => [products];
+}
+
+class ProductSearchCategoryResult extends ProductState {
+  final List<Product> products;
+
+  const ProductSearchCategoryResult(this.products);
+
+  @override
+  List<Object> get props => [products];
+}

@@ -1,5 +1,3 @@
-
-
 class Product {
   String? id;
   String? name;
@@ -11,16 +9,17 @@ class Product {
   String? cloudinaryImageId;
   String? categoryId;
 
-  Product(
-      {this.id,
-      this.name,
-      this.description,
-      this.price,
-      this.sale,
-      this.stock,
-      this.profileImage,
-      this.cloudinaryImageId,
-      this.categoryId,  required String category});
+  Product({
+    this.id,
+    this.name,
+    this.description,
+    this.price,
+    this.sale,
+    this.stock,
+    this.profileImage,
+    this.cloudinaryImageId,
+    this.categoryId,
+  });
 
   Product.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -53,5 +52,4 @@ class Product {
   String toString() {
     return 'Product{id: $id, name: $name, description: $description, price: $price, sale: $sale, stock: $stock, profileImage: $profileImage, cloudinaryImageId: $cloudinaryImageId, categoryId: $categoryId}';
   }
-
 }

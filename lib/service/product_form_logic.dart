@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 void handleProductState(
-    BuildContext context, ProductState state, VoidCallback clearForm) {
+    BuildContext context,
+    ProductState state,
+    VoidCallback clearForm,
+    VoidCallback onUpdate,
+) {
   if (state is ProductError) {
     Navigator.pop(context); // Đóng dialog
     ScaffoldMessenger.of(context)
@@ -16,22 +20,19 @@ void handleProductState(
     Navigator.pop(context); // Đóng dialog
     Navigator.of(context).pop(true);
   }
-
   if (state is ProductUpdated) {
     ScaffoldMessenger.of(context)
         .showSnackBar(const SnackBar(content: Text("Cập nhật thành công")));
     clearForm();
     Navigator.pop(context); // Đóng dialog
     Navigator.of(context).pop(true);
-    context.read<ProductBloc>().add(LoadProducts());
+    onUpdate(); // Gọi callback để cập nhật danh sách
   }
-
   if (state is ProductDeleted) {
     ScaffoldMessenger.of(context)
         .showSnackBar(const SnackBar(content: Text("Xóa sản phẩm thành công")));
     clearForm();
-    // Navigator.pop(context); // Đóng dialog
     Navigator.of(context).pop(true);
-    context.read<ProductBloc>().add(LoadProducts());
+    onUpdate(); // Gọi callback để cập nhật danh sách
   }
 }

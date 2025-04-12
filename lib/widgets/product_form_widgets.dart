@@ -9,7 +9,7 @@ Widget buildTextField({
   required TextEditingController controller,
   Widget? suffixIcon,
   TextInputType? keyboardType,
-  int maxLines = 1,
+  maxLines = 1,
 }) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
