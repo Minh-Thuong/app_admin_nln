@@ -42,7 +42,7 @@ Click the image above to watch the full demo on YouTube (Admin App).
 To run this project locally:
 
 ```bash
-git clone https://github.com/Minh-Thuong/admin.git
+git clone [https://github.com/Minh-Thuong/admin.git](https://github.com/Minh-Thuong/app_admin_nln.git)
 cd admin
 flutter pub get
 flutter run
